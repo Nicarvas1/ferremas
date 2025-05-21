@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from transbank.webpay.webpay_plus.transaction import Transaction
 from django.conf import settings
 from django.http import JsonResponse
-
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 def index(request):
     return render(request, 'index.html')
@@ -35,3 +38,43 @@ def webpay_return(request):
     result = tx.commit(token)
     # Aquí puedes revisar el resultado y mostrarlo en pantalla o guardar el pago
     return JsonResponse(result)
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'¡Cuenta creada para {username}! Ahora puedes iniciar sesión.')
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'¡Bienvenido {username}!')
+                return redirect('index')
+            else:
+                messages.error(request, 'Usuario o contraseña inválidos.')
+        else:
+            messages.error(request, 'Usuario o contraseña inválidos.')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'Has cerrado sesión exitosamente.')
+    return redirect('index')
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')

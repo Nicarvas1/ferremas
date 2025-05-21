@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Tools Shop - Iniciar Sesión</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}" />
+<script type="text/javascript" src="{% static 'js/boxOver.js' %}"></script>
+</head>
+<body>
+<div id="main_container">
+  <div id="header">
+    <div id="logo"> <a href="{% url 'index' %}"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182" height="85" /></a> </div>
+  </div>
+  <div id="main_content">
+    <div class="center_content">
+      <div class="center_title_bar">Iniciar Sesión</div>
+      <div class="prod_box">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        
+        <form method="post" class="login-form">
+          {% csrf_token %}
+          {% if form.errors %}
+            <div class="error-message">
+              Por favor corrija los siguientes errores:
+              {{ form.errors }}
+            </div>
+          {% endif %}
+          <div class="form-group">
+            <label for="username">Nombre de Usuario:</label>
+            <input type="text" name="username" id="username" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña:</label>
+            <input type="password" name="password" id="password" required>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="prod_buy">Iniciar Sesión</button>
+          </div>
+        </form>
+        <p class="login-link">
+          ¿No tienes una cuenta? <a href="{% url 'register' %}">Regístrate aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="left_footer"> <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42"/> </div>
+    <div class="center_footer">Ferremas. Todos los derechos reserva2<br />
+      <a href="http://csscreme.com"><img src="{% static 'images/csscreme.jpg' %}" alt="csscreme" title="csscreme" border="0" /></a><br />
+      <img src="{% static 'images/payment.gif' %}" alt="" /> </div>
+    <div class="right_footer"> <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> <a href="#">rss</a> <a href="#">Contactanos</a> </div>
+  </div>
+</div>
+</body>
+</html>

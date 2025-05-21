@@ -23,6 +23,13 @@
     <div id="logo"> <a href="#"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182" height="85" /></a> </div>
   </div>
   <div id="main_content">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" style="margin: 10px; padding: 10px; border-radius: 4px; text-align: center;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
     <div id="menu_tab">
       <ul class="menu">
         <li><a href="#" class="nav"> Home </a></li>
@@ -31,10 +38,17 @@
         <li class="divider"></li>
         <li><a href="#" class="nav">Especialidades</a></li>
         <li class="divider"></li>
-        <li><a href="#" class="nav">Mi Cuenta</a></li>
-        <li class="divider"></li>
-        <li><a href="#" class="nav">Registrarse</a></li>
-        <li class="divider"></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'logout' %}" class="nav" onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
+            <li class="divider"></li>
+        {% else %}
+            <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
+            <li class="divider"></li>
+        {% endif %}
         <li><a href="#" class="nav">Envios</a></li>
         <li class="divider"></li>
         <li><a href="contact.html" class="nav">Contactanos</a></li>
