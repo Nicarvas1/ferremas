@@ -35,6 +35,7 @@ urlpatterns = [
     path('api/paypal/', include('paypal.urls')),
     path('prueba-csrf/', test_csrf),  # pon esto arriba de todo
     path('api/whatsapp/', include('whatsapp.urls')),
+    path('api/geolocalizacion/', include('geolocalizacion.urls')),
     path('admin/', admin.site.urls),
     path('', include('core.urls')),  # Incluye las URLs de la aplicación 'core'
 ]
