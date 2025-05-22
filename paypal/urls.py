@@ -1,7 +1,9 @@
 from django.urls import path
 from .views import paypal_create_order, paypal_capture_order
+from . import views
+
 
 urlpatterns = [
-    path('create-order/', paypal_create_order, name='paypal_create_order'),
-    path('capture-order/', paypal_capture_order, name='paypal_capture_order'),
+    path("crear-orden/<str:total_usd>/", views.paypal_create_order, name="crear_orden_paypal"),
+    path("capture-order/", views.paypal_capture_order, name="capture_order_paypal"),
 ]

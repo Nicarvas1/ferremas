@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import send_whatsapp_template
+from .views import enviar_whatsapp_pedido
 
 urlpatterns = [
-    path('send/', send_whatsapp_template, name='send_whatsapp_template'),
+    path('send/', enviar_whatsapp_pedido, name='enviar_whatsapp_pedido'),
 ]

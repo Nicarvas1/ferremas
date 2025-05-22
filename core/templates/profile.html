@@ -2,44 +2,78 @@
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-<title>Tools Shop - Mi Perfil</title>
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}" />
-<script type="text/javascript" src="{% static 'js/boxOver.js' %}"></script>
+  <title>Tools Shop - Mi Perfil</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}" />
+  <script type="text/javascript" src="{% static 'js/boxOver.js' %}"></script>
 </head>
+
 <body>
-<div id="main_container">
-  <div id="header">
-    <div id="logo"> <a href="{% url 'index' %}"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182" height="85" /></a> </div>
-  </div>
-  <div id="main_content">
-    <div class="center_content">
-      <div class="center_title_bar">Mi Perfil</div>
-      <div class="prod_box">
-        <div class="profile-info">
-          <h2>Bienvenido, {{ user.username }}</h2>
-          <div class="profile-details">
-            <p><strong>Nombre de Usuario:</strong> {{ user.username }}</p>
-            <p><strong>Correo Electrónico:</strong> {{ user.email }}</p>
-            <p><strong>Fecha de Registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
-          </div>
-          <div class="profile-actions">
-            <a href="{% url 'index' %}" class="prod_buy">Volver al Inicio</a>
-            <a href="{% url 'logout' %}" class="prod_buy" style="background-color: #e74c3c;" onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a>
+  <div id="main_container">
+    <div id="header">
+      <div id="logo"> <a href="{% url 'index' %}"><img src="{% static 'images/logoFM.png' %}" alt="" border="0"
+            width="182" height="85" /></a> </div>
+    </div>
+    <div id="menu_tab">
+      <ul class="menu">
+        <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
+        <li class="divider"></li>
+    
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'logout' %}" class="nav"
+            onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
+        <li class="divider"></li>
+        {% else %}
+        <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
+        <li class="divider"></li>
+        {% endif %}
+        <li><a href="#" class="nav">Envios</a></li>
+        <li class="divider"></li>
+        <li><a href="#" class="nav">Contactanos</a></li>
+        <li class="divider"></li>
+      </ul>
+    </div>
+    <div id="main_content">
+      <div class="center_content">
+        <div class="center_title_bar">Mi Perfil</div>
+        <div class="prod_box">
+          <div class="profile-info">
+            <h2>Bienvenido, {{ user.username }}</h2>
+            <div class="profile-details">
+              <p><strong>Nombre de Usuario:</strong> {{ user.username }}</p>
+              <p><strong>Correo Electrónico:</strong> {{ user.email }}</p>
+              <p><strong>Fecha de Registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+            </div>
+            <div class="profile-actions">
+              <a href="{% url 'index' %}" class="prod_buy">Volver al Inicio</a>
+              <a href="{% url 'logout' %}" class="prod_buy" style="background-color: #e74c3c;"
+                onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="footer">
+      <div class="left_footer"> <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42" />
+      </div>
+      <div class="center_footer">Ferremas. Todos los derechos reserva2<br />
+        <a href="http://csscreme.com"><img src="{% static 'images/csscreme.jpg' %}" alt="csscreme" title="csscreme"
+            border="0" /></a><br />
+        <img src="{% static 'images/payment.gif' %}" alt="" />
+      </div>
+      <div class="right_footer"> <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> <a
+          href="#">rss</a> <a href="#">Contactanos</a> </div>
+    </div>
   </div>
-  <div class="footer">
-    <div class="left_footer"> <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42"/> </div>
-    <div class="center_footer">Ferremas. Todos los derechos reserva2<br />
-      <a href="http://csscreme.com"><img src="{% static 'images/csscreme.jpg' %}" alt="csscreme" title="csscreme" border="0" /></a><br />
-      <img src="{% static 'images/payment.gif' %}" alt="" /> </div>
-    <div class="right_footer"> <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> <a href="#">rss</a> <a href="#">Contactanos</a> </div>
-  </div>
-</div>
 </body>
-</html> 
+
+</html>

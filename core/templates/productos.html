@@ -1,0 +1,158 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Tools Shop!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <script type="text/javascript" src="{% static 'js/boxOver.js' %}"></script>
+</head>
+
+<body>
+    <div id="main_container">
+        <div id="header">
+            <div class="top_right">
+                <div class="languages">
+                    <div class="lang_text">Languages:</div>
+                    <a href="#" class="lang"><img src="{% static 'images/en.gif' %}" alt="" border="0" /></a> <a
+                        href="#" class="lang"><img src="{% static 'images/de.gif' %}" alt="" border="0" /></a>
+                </div>
+                <div class="big_banner"> <a href="#"><img src="{% static 'images/banner728.jpg' %}" alt=""
+                            border="0" /></a> </div>
+            </div>
+            <div id="logo"> <a href="#"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182"
+                        height="85" /></a> </div>
+        </div>
+        <div id="menu_tab">
+            <ul class="menu">
+                <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
+                <li class="divider"></li>
+     
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'logout' %}" class="nav"
+                        onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
+                <li class="divider"></li>
+                {% else %}
+                <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
+                <li class="divider"></li>
+                {% endif %}
+                <li><a href="#" class="nav">Envios</a></li>
+                <li class="divider"></li>
+                <li><a href="#" class="nav">Contactanos</a></li>
+                <li class="divider"></li>
+            </ul>
+        </div>
+        <div class="left_content">
+            <div class="title_box">Categorias</div>
+            <ul class="left_menu">
+                {% for cat in categorias %}
+                <li class="{% cycle 'odd' 'even' %}{% if categoria_activa == cat %} active{% endif %}">
+                    <a href="?categoria={{ cat|urlencode }}">{{ cat }}</a>
+                </li>
+                {% endfor %}
+                <li class="odd"><a href="{% url 'productos_ferreteria' %}">Ver todas</a></li>
+
+            </ul>
+            <div class="title_box">Producto destacado</div>
+            <div class="border_box">
+                <div class="product_title"><a href="#">Makita 156 MX-VL</a></div>
+                <div class="product_img"><a href="#"><img src="{% static 'images/p1.jpg' %}" alt="" border="0" /></a>
+                </div>
+                <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
+            </div>
+            <div class="title_box">Boletín</div>
+            <div class="border_box">
+                <input type="text" name="newsletter" class="newsletter_input" value="your email" />
+                <a href="#" class="join">subscribirse</a>
+            </div>
+            <div class="banner_adds"> <a href="#"><img src="{% static 'images/bann2.jpg' %}" alt="" border="0" /></a>
+            </div>
+        </div>
+        <div class="center_content">
+
+            <div class="center_title_bar">Productos</div>
+            {% for prod in productos %}
+            <div class="prod_box">
+                <div class="center_prod_box">
+                    <div class="product_title"><a href="#">{{ prod.nombre }}</a></div>
+                    <div class="product_img">
+                        <a href="#"><img src="{{ prod.foto }}" alt="{{ prod.nombre }}" border="0" /></a>
+                    </div>
+                    <div class="prod_price">
+                        <span class="reduce">${{ prod.precio|add:"2000" }}</span>
+                        <span class="price">${{ prod.precio|floatformat:0 }}</span>
+                    </div>
+                </div>
+                <div class="prod_details_tab">
+                    <a href="{% url 'agregar_al_carrito' prod.id %}" class="prod_buy">Comprar</a>
+                    <a href="{% url 'detalle_producto' prod.id %}" class="prod_details">Detalles</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>No hay productos registrados.</p>
+            {% endfor %}
+
+        </div>
+        <div class="right_content">
+            <div class="title_box">Buscar</div>
+            <div class="border_box">
+                <input type="text" name="newsletter" class="newsletter_input" value="keyword" />
+                <a href="#" class="join">Buscar</a>
+            </div>
+            <div class="shopping_cart">
+                <div class="title_box">Carrito de compras</div>
+                {% if carrito %}
+                <div class="cart_details">
+                    <ul style="list-style: none; padding: 0;">
+                        {% for pid, cantidad in carrito.items %}
+                        {% with prod=productos_dict|get_item:pid %}
+                        {% if prod %}
+                        <li><b>{{ prod.nombre }}</b> (x{{ cantidad }}) - ${{ prod.precio|floatformat:0 }} c/u</li>
+                        {% endif %}
+                        {% endwith %}
+                        {% endfor %}
+                    </ul>
+                    <span class="border_cart"></span>
+                    <b>{{ total_productos }} productos</b><br />
+                    <b>Total: <span class="price">${{ total_carrito }}</span></b>
+                </div>
+                {% else %}
+                <div class="cart_details">Carrito vacío</div>
+                {% endif %}
+                <div class="cart_icon">
+                    <a href="#"><img src="{% static 'images/shoppingcart.png' %}" alt="" width="35" height="35"
+                            border="0" /></a>
+                </div>
+                <br>
+                <a href="{% url 'detalle_carrito' %}" class="prod_buy" style="margin-right:10px;">Pagar</a>
+                <a href="{% url 'limpiar_carrito' %}" class="prod_details"
+                    onclick="return confirm('¿Seguro que quieres vaciar el carrito?')">Limpiar</a>
+            </div>
+
+
+        </div>
+        <div class="footer">
+            <div class="left_footer"> <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42" />
+            </div>
+            <div class="center_footer">Ferremas. Todos los derechos reserva2<br />
+                <a href="http://csscreme.com"><img src="{% static 'images/csscreme.jpg' %}" alt="csscreme"
+                        title="csscreme" border="0" /></a><br />
+                <img src="{% static 'images/payment.gif' %}" alt="" />
+            </div>
+            <div class="right_footer"> <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> <a
+                    href="#">rss</a> <a href="#">Contactanos</a> </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+</html>

@@ -32,7 +32,7 @@ def test_csrf(request):
 
 urlpatterns = [
     path('api/webpay/', include('webpay.urls')),
-    path('api/paypal/', include('paypal.urls')),
+    path('api/paypal/', include(('paypal.urls', 'paypal'), namespace='paypal')),
     path('prueba-csrf/', test_csrf),  # pon esto arriba de todo
     path('api/whatsapp/', include('whatsapp.urls')),
     path('api/geolocalizacion/', include('geolocalizacion.urls')),

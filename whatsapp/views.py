@@ -3,11 +3,9 @@ from django.views.decorators.csrf import csrf_exempt
 import requests
 
 @csrf_exempt
-def send_whatsapp_template(request):
-    ACCESS_TOKEN = "EAAJ6QiuyAKkBO4dzjszaKUmjpY1ApqVS1ZCD58IHeZBvEZCh5AzbvMSyBMbnugtK2YhZCZBqLqWYZAaFIDG9n8WxHIVT9EtZAppgGCjRJ2zMJrGmmVFlhF6coHs4y3PYs71ZAaqReunlUwyw4i8xgImSBOv0ppnQAnIiDtabbmq2SfXN2xYMXzHZBMRDnIs7o7BCkMyilwNa8EKUfaQcos8RWrT2eSAZDZD"
+def enviar_whatsapp_pedido(nombre, pedido_id, numero_destino):
+    ACCESS_TOKEN = "EAAJ6QiuyAKkBOzhBFh5aG4fewLrfxBNJdjOzkkUWu9e47qUCmQxyTgOokYl2dArOVX2d192naMG7DQt2DEZAgyfGiSx3h0FFw8efriz4rAwceB1ScJyEfENwhWF4wC51hEXbWZCZAFYzgeyttOXxQuZCWkZC1EIZBJAVSUJlHnntMSW6rgEeDsG8z6jBx9prNemZAtWgMG5WZBbgVZACZAzcqJr0x6"
     PHONE_NUMBER_ID = "626298767238639"
-    RECIPIENT_NUMBER = "56955267084"  # Sin +
-
     url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -15,14 +13,24 @@ def send_whatsapp_template(request):
     }
     data = {
         "messaging_product": "whatsapp",
-        "to": RECIPIENT_NUMBER,
+        "to": numero_destino,
         "type": "template",
         "template": {
-            "name": "hello_world",
+            "name": "pedidos_id",  # Tu plantilla de Meta
             "language": {
-                "code": "en_US"
-            }
+                "code": "es"  # Ajusta según la plantilla (es, es_MX, etc)
+            },
+            "components": [
+                {
+                    "type": "body",
+                    "parameters": [
+                        {"type": "text", "text": nombre},
+                        {"type": "text", "text": str(pedido_id)}
+                    ]
+                }
+            ]
         }
     }
     response = requests.post(url, headers=headers, json=data)
-    return JsonResponse({"status": response.status_code, "result": response.json()})
+    return response.status_code, response.json()
+

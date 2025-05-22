@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Detalle del Carrito</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <style>
+        .carrito-table {
+            width: 80%;
+            margin: 40px auto 20px auto;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 10px #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .carrito-table th,
+        .carrito-table td {
+            border: 1px solid #e2e2e2;
+            padding: 12px 18px;
+            text-align: center;
+        }
+
+        .carrito-table th {
+            background: #f5f5f5;
+        }
+
+
+
+
+
+
+        .empty-cart-msg {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 30px;
+            color: #888;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+            color: #228b22;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main_container">
+        <div id="header">
+            <div class="top_right">
+                <div class="languages">
+                    <div class="lang_text">Languages:</div>
+                    <a href="#" class="lang"><img src="{% static 'images/en.gif' %}" alt="" border="0" /></a> <a
+                        href="#" class="lang"><img src="{% static 'images/de.gif' %}" alt="" border="0" /></a>
+                </div>
+                <div class="big_banner"> <a href="#"><img src="{% static 'images/banner728.jpg' %}" alt=""
+                            border="0" /></a> </div>
+            </div>
+            <div id="logo"> <a href="#"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182"
+                        height="85" /></a> </div>
+        </div>
+        <div id="menu_tab">
+            <ul class="menu">
+                <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
+                <li class="divider"></li>
+ 
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'logout' %}" class="nav"
+                        onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
+                <li class="divider"></li>
+                {% else %}
+                <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
+                <li class="divider"></li>
+                {% endif %}
+                <li><a href="#" class="nav">Envios</a></li>
+                <li class="divider"></li>
+                <li><a href="#" class="nav">Contactanos</a></li>
+                <li class="divider"></li>
+            </ul>
+        </div>
+
+        <div class="center_content">
+            <h2>Detalle del Carrito</h2>
+            {% if items %}
+            <table class="carrito-table">
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio c/u</th>
+                    <th>Subtotal</th>
+                </tr>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.producto.nombre }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>${{ item.producto.precio|floatformat:0 }}</td>
+                    <td>${{ item.subtotal|floatformat:0 }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3" style="text-align: right;"><b>Total en CLP:</b></td>
+                    <td><b>${{ total|floatformat:0 }}</b></td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><b>Total en USD:</b></td>
+                    <td><b>
+                            {% if total_usd %}${{ total_usd }}{% else %}No disponible{% endif %}
+                        </b></td>
+                </tr>
+
+            </table>
+            <div class="carrito-buttons">
+                <a href="{% url 'productos_ferreteria' %}" class="prod_details">Volver</a>
+                <a href="{% url 'limpiar_carrito' %}" class="prod_buy"
+                    onclick="return confirm('¿Seguro que quieres vaciar el carrito?')">Limpiar carrito</a>
+                <a href="{% url 'paypal:crear_orden_paypal' total_usd=total_usd %}" class="prod_buy"
+                    style="background: #2063d1; border-color: #1851ad;">Pagar</a>
+            </div>
+            {% else %}
+            <div class="empty-cart-msg">El carrito está vacío.</div>
+            <div class="carrito-buttons">
+                <a href="{% url 'productos_ferreteria' %}" class="prod_buy">Ver productos</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="footer">
+            <div class="left_footer"> <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42" />
+            </div>
+            <div class="center_footer">Ferremas. Todos los derechos reserva2<br />
+                <a href="http://csscreme.com"><img src="{% static 'images/csscreme.jpg' %}" alt="csscreme"
+                        title="csscreme" border="0" /></a><br />
+                <img src="{% static 'images/payment.gif' %}" alt="" />
+            </div>
+            <div class="right_footer"> <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> <a
+                    href="#">rss</a> <a href="#">Contactanos</a> </div>
+        </div>
+    </div>
+</body>
+
+</html>
