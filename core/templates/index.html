@@ -104,19 +104,8 @@
 
 <body>
   <div id="main_container">
-    <div id="header">
-      <div class="top_right">
-        <div class="languages">
-          <div class="lang_text">Languages:</div>
-          <a href="#" class="lang"><img src="{% static 'images/en.gif' %}" alt="" border="0" /></a> <a href="#"
-            class="lang"><img src="{% static 'images/de.gif' %}" alt="" border="0" /></a>
-        </div>
-        <div class="big_banner"> <a href="#"><img src="{% static 'images/banner728.jpg' %}" alt="" border="0" /></a>
-        </div>
-      </div>
-      <div id="logo"> <a href="#"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182"
-            height="85" /></a> </div>
-    </div>
+        <!-- Header -->
+        {% include "partials/header.html" %}
     <div id="main_content">
       {% if messages %}
       {% for message in messages %}
@@ -126,31 +115,8 @@
       </div>
       {% endfor %}
       {% endif %}
-      <div id="menu_tab">
-        <ul class="menu">
-          <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
-          <li class="divider"></li>
-          <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
-          <li class="divider"></li>
-
-          {% if user.is_authenticated %}
-          <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
-          <li class="divider"></li>
-          <li><a href="{% url 'logout' %}" class="nav"
-              onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
-          <li class="divider"></li>
-          {% else %}
-          <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
-          <li class="divider"></li>
-          <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
-          <li class="divider"></li>
-          {% endif %}
-          <li><a href="#" class="nav">Envios</a></li>
-          <li class="divider"></li>
-          <li><a href="#" class="nav">Contactanos</a></li>
-          <li class="divider"></li>
-        </ul>
-      </div>
+      <!-- partial of menu tab -->
+      {% include "partials/menu_tab.html" %}
       <!-- end of menu tab -->
       <div class="left_content">
         <div class="title_box">Opiniones</div>

@@ -353,6 +353,25 @@ width:170px;
 padding:10px 0 0 10px;
 float:left;
 }
+
+/* probando imagen de producto */
+.product_img {
+    height: 150px;
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.product_img img {
+    width: 150px;
+    height: auto;
+    object-fit: contain;
+}
+/* probando imagen de producto */
+
 .details_big_box{
 width:345px;
 float:left;

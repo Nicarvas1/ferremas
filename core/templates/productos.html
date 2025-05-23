@@ -13,44 +13,10 @@
 
 <body>
     <div id="main_container">
-        <div id="header">
-            <div class="top_right">
-                <div class="languages">
-                    <div class="lang_text">Languages:</div>
-                    <a href="#" class="lang"><img src="{% static 'images/en.gif' %}" alt="" border="0" /></a> <a
-                        href="#" class="lang"><img src="{% static 'images/de.gif' %}" alt="" border="0" /></a>
-                </div>
-                <div class="big_banner"> <a href="#"><img src="{% static 'images/banner728.jpg' %}" alt=""
-                            border="0" /></a> </div>
-            </div>
-            <div id="logo"> <a href="#"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182"
-                        height="85" /></a> </div>
-        </div>
-        <div id="menu_tab">
-            <ul class="menu">
-                <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
-                <li class="divider"></li>
-                <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
-                <li class="divider"></li>
-     
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
-                <li class="divider"></li>
-                <li><a href="{% url 'logout' %}" class="nav"
-                        onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
-                <li class="divider"></li>
-                {% else %}
-                <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
-                <li class="divider"></li>
-                <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
-                <li class="divider"></li>
-                {% endif %}
-                <li><a href="#" class="nav">Envios</a></li>
-                <li class="divider"></li>
-                <li><a href="#" class="nav">Contactanos</a></li>
-                <li class="divider"></li>
-            </ul>
-        </div>
+                <!-- Header -->
+        {% include "partials/header.html" %}
+              <!-- partial of menu tab -->
+        {% include "partials/menu_tab.html" %}
         <div class="left_content">
             <div class="title_box">Categorias</div>
             <ul class="left_menu">
@@ -85,7 +51,7 @@
                 <div class="center_prod_box">
                     <div class="product_title"><a href="#">{{ prod.nombre }}</a></div>
                     <div class="product_img">
-                        <a href="#"><img src="{{ prod.foto }}" alt="{{ prod.nombre }}" border="0" /></a>
+                        <a href="#"><img src="{% static 'images/productos/' %}{{ prod.foto }}" alt="{{ prod.nombre }}" border="0" /></a>
                     </div>
                     <div class="prod_price">
                         <span class="reduce">${{ prod.precio|add:"2000" }}</span>

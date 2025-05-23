@@ -12,10 +12,10 @@
 
 <body>
   <div id="main_container">
-    <div id="header">
-      <div id="logo"> <a href="{% url 'index' %}"><img src="{% static 'images/logoFM.png' %}" alt="" border="0"
-            width="182" height="85" /></a> </div>
-    </div>
+          <!-- Header -->
+      {% include "partials/header.html" %}
+          <!-- partial of menu tab -->
+      {% include "partials/menu_tab.html" %}
     <div id="main_content">
       <div class="center_content">
         <div class="center_title_bar">Registro de Usuario</div>

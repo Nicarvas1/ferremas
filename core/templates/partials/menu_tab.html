@@ -1,0 +1,25 @@
+<div id="menu_tab">
+    <ul class="menu">
+        <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
+        <li class="divider"></li>
+
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'logout' %}" class="nav"
+                onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
+        <li class="divider"></li>
+        {% else %}
+        <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
+        <li class="divider"></li>
+        {% endif %}
+        <li><a href="#" class="nav">Envios</a></li>
+        <li class="divider"></li>
+        <li><a href="#" class="nav">Contactanos</a></li>
+        <li class="divider"></li>
+    </ul>
+</div>
