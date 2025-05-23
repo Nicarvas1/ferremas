@@ -16,6 +16,92 @@
   <script type="text/javascript" src="{% static 'js/boxOver.js' %}"></script>
 </head>
 
+<style>
+  .carousel-container {
+    position: relative;
+    max-width: 600px;
+    margin: 20px auto;
+    overflow: hidden;
+  }
+
+  .carousel-slide {
+    position: relative;
+    height: 300px;
+  }
+
+  .carousel-slide img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.7s;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .carousel-slide img.active {
+    opacity: 1;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .carousel-dot {
+    cursor: pointer;
+    font-size: 22px;
+    color: #bbb;
+    transition: color 0.2s;
+    margin: 0 4px;
+  }
+
+  .carousel-dot.active {
+    color: #2063d1;
+  }
+</style>
+
+
+<script>
+  const locations = [
+    { lat: -33.67905040491916, lng: -71.21337979369568, nombre: "Sucursal Ferremas, Serrano 1105, Melipilla" },
+    { lat: -33.685316962431244, lng: -71.21454891762096, nombre: "Sucursal Ferremas, Serrano 395, Melipilla" },
+    { lat: -33.693935792450645, lng: -71.21356720707071, nombre: "Sucursal Ferremas, Av. Vicuña Mackenna 480, Melipilla" }
+  ];
+
+  function initMap() {
+    // Centro del mapa (primer marcador)
+    var center = locations[0];
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: center
+    });
+
+    // Agrega los marcadores
+    locations.forEach(function (loc) {
+      var marker = new google.maps.Marker({
+        position: { lat: loc.lat, lng: loc.lng },
+        map: map,
+        title: loc.nombre
+      });
+
+      // InfoWindow opcional
+      var infowindow = new google.maps.InfoWindow({
+        content: `<b>${loc.nombre}</b>`
+      });
+      marker.addListener('click', function () {
+        infowindow.open(map, marker);
+      });
+    });
+  }
+</script>
+
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDA3Lg9DMNyDrfBqPa52M-vYPwhw_0vpng&callback=initMap"></script>
+
 <body>
   <div id="main_container">
     <div id="header">
@@ -46,7 +132,7 @@
           <li class="divider"></li>
           <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
           <li class="divider"></li>
-  
+
           {% if user.is_authenticated %}
           <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
           <li class="divider"></li>
@@ -66,139 +152,79 @@
         </ul>
       </div>
       <!-- end of menu tab -->
-      <div class="crumb_navigation"> Navigation: <span class="current">Home</span> </div>
       <div class="left_content">
-        <div class="title_box">Categorias</div>
-        <ul class="left_menu">
-          <li class="odd"><a href="#">Herramientas Eléctricas</a></li>
-          <li class="even"><a href="#">Herramientas Neumáticas</a></li>
-          <li class="odd"><a href="#">Herramientas Manuales</a></li>
-          <li class="even"><a href="#">Accesorios</a></li>
-          <li class="odd"><a href="#">Ropa de Trabajo</a></li>
-          <li class="even"><a href="#">Repuestos</a></li>
-          <li class="odd"><a href="#">Herramientas Eléctricas</a></li>
-          <li class="even"><a href="#">Herramientas Neumáticas</a></li>
-          <li class="odd"><a href="#">Herramientas Manuales</a></li>
-          <li class="even"><a href="#">Accesorios</a></li>
-          <li class="odd"><a href="#">Ropa de Trabajo</a></li>
-          <li class="even"><a href="#">Repuestos</a></li>
-        </ul>
-        <div class="title_box">Producto destacado</div>
+        <div class="title_box">Opiniones</div>
         <div class="border_box">
-          <div class="product_title"><a href="#">Makita 156 MX-VL</a></div>
-          <div class="product_img"><a href="#"><img src="{% static 'images/p1.jpg' %}" alt="" border="0" /></a></div>
-          <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
+          <p>“Me llegó todo rápido y en perfecto estado. ¡Muy recomendable!” <br><i>- Francisco R.</i></p>
+          <hr>
+          <p>“Atención personalizada y buenos precios. Volveré a comprar.” <br><i>- Javiera M.</i></p>
+          <hr>
+          <p>“Gran variedad de herramientas, encontré justo lo que necesitaba.” <br><i>- Carlos S.</i></p>
+          <hr>
+          <p>“Respondieron mis dudas por WhatsApp al instante. Excelente servicio.” <br><i>- Antonia P.</i></p>
+          <hr>
+          <p>“El sitio es fácil de usar y el pago fue muy seguro.” <br><i>- Vicente L.</i></p>
         </div>
-        <div class="title_box">Boletín</div>
+        <div class="title_box">Preguntas Frecuentes</div>
         <div class="border_box">
-          <input type="text" name="newsletter" class="newsletter_input" value="your email" />
-          <a href="#" class="join">subscribirse</a>
+          <p><b>¿Realizan envíos a todo Chile?</b><br>Sí, despachamos a cualquier región del país.</p>
+          <p><b>¿Puedo pagar con tarjeta de crédito o débito?</b><br>Sí, aceptamos pagos con tarjetas y PayPal.</p>
+          <p><b>¿Cuánto tarda el despacho?</b><br>Entre 2 a 5 días hábiles dependiendo de tu ubicación.</p>
+          <p><b>¿Tienen local físico?</b><br>Sí, puedes visitarnos en Melipilla. ¡Revisa nuestro mapa!</p>
+          <p><b>¿Cómo contacto al servicio al cliente?</b><br>Puedes escribirnos por WhatsApp o al correo
+            contacto@ferremas.cl.</p>
         </div>
-        <div class="banner_adds"> <a href="#"><img src="{% static 'images/bann2.jpg' %}" alt="" border="0" /></a> </div>
+
+
+
+        <div class="title_box">Promociones</div>
+        <div class="border_box">
+          <ul style="padding-left:18px;">
+            <li>20% en herramientas eléctricas</li>
+            <li>Envío gratis sobre $50.000</li>
+            <li>3x2 en tornillos y fijaciones</li>
+          </ul>
+        </div>
+        <div class="title_box">¿Necesitas ayuda?</div>
+        <div class="border_box">
+          <p><b>Teléfono:</b> +56 9 5526 7084</p>
+          <p><b>Email:</b> contacto@ferremas.cl</p>
+          <p><b>Horario:</b> Lun-Vie 9:00-18:00</p>
+        </div>
+
+
       </div>
       <!-- end of left content -->
       <div class="center_content">
-        <div class="oferta"> <img src="{% static 'images/p1.png' %}" width="165" height="113" border="0"
-            class="oferta_img" alt="" />
-          <div class="oferta_details">
-            <div class="oferta_title">Herramienta electrica BST18XN sin cable</div>
-            <div class="oferta_text"> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            </div>
-            <a href="#" class="prod_buy">Detalles</a>
+        <h2 style="text-align:center; margin-top:15px; margin-bottom:10px;">Bienvenido a Ferremas</h2>
+
+        <div class="carousel-container">
+          <div class="carousel-slide" id="carousel-slide">
+            <img
+              src="https://www.josegarciaehijos.com/wp-content/uploads/2017/08/galeria_ferreteria_suministros_jose_garcia_lepe-8.jpg"
+              alt="Ferretería 1">
+            <img
+              src="https://ferreteria-y-bricolaje.cdecomunicacion.es/wp-content/webp-express/webp-images/uploads/2023/09/productos-ferreteria-gamero.jpg.webp"
+              alt="Ferretería 2">
+            <img src="https://www.bocelujosla86.com/cdn/shop/collections/Ferreteria.jpg?v=1593555968"
+              alt="Ferretería 3">
+          </div>
+          <div style="text-align:center; margin-top:10px;">
+            <span class="carousel-dot" onclick="goToImage(0)">●</span>
+            <span class="carousel-dot" onclick="goToImage(1)">●</span>
+            <span class="carousel-dot" onclick="goToImage(2)">●</span>
           </div>
         </div>
-        <div class="center_title_bar">Nuevos productos</div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Makita 156 MX-VL</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p1.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Bosch XC</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p2.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Lotus PP4</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p4.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Makita 156 MX-VL</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p3.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Bosch XC</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p5.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Lotus PP4</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p6.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="center_title_bar">Productos recomendados</div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Makita 156 MX-VL</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p7.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Bosch XC</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p1.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
-        <div class="prod_box">
-          <div class="center_prod_box">
-            <div class="product_title"><a href="#">Lotus PP4</a></div>
-            <div class="product_img"><a href="#"><img src="{% static 'images/p3.jpg' %}" alt="" border="0" /></a></div>
-            <div class="prod_price"><span class="reduce">350$</span> <span class="price">270$</span></div>
-          </div>
-          <div class="prod_details_tab"> <a href="#" class="prod_buy">Comprar</a> <a href="#"
-              class="prod_details">Detalles</a> </div>
-        </div>
+
+
+        <h2 style="text-align:center; margin-top:15px; margin-bottom:10px;">Nuestras sucursales</h2>
+        <div id="map" style="width:100%; max-width:600px; height:400px; margin:auto;"></div>
+
+
       </div>
       <!-- end of center content -->
       <div class="right_content">
-        <div class="title_box">Buscar</div>
-        <div class="border_box">
-          <input type="text" name="newsletter" class="newsletter_input" value="keyword" />
-          <a href="#" class="join">Buscar</a>
-        </div>
+
         <div class="shopping_cart">
           <div class="title_box">Carrito de compras</div>
           {% if carrito %}
@@ -222,7 +248,11 @@
           <div class="cart_icon">
             <a href="#"><img src="{% static 'images/shoppingcart.png' %}" alt="" width="35" height="35"
                 border="0" /></a>
+
           </div>
+          <a href="{% url 'detalle_carrito' %}" class="prod_buy" style="margin-right:10px;">Pagar</a>
+          <a href="{% url 'limpiar_carrito' %}" class="prod_details"
+            onclick="return confirm('¿Seguro que quieres vaciar el carrito?')">Limpiar</a>
         </div>
 
 
@@ -243,5 +273,47 @@
     </div>
     <!-- end of main_container -->
 </body>
+<script>
+  let currentIndex = 0;
+  const images = document.querySelectorAll('#carousel-slide img');
+  const dots = document.querySelectorAll('.carousel-dot');
+  let intervalId;
+
+  function showImage(index) {
+    images.forEach((img, i) => {
+      if (i === index) {
+        img.classList.add('active');
+      } else {
+        img.classList.remove('active');
+      }
+      dots[i].classList.toggle('active', i === index);
+    });
+    currentIndex = index;
+  }
+
+  function nextImage() {
+    let nextIndex = (currentIndex + 1) % images.length;
+    showImage(nextIndex);
+  }
+
+  function goToImage(index) {
+    showImage(index);
+    resetInterval();
+  }
+
+  function startInterval() {
+    intervalId = setInterval(nextImage, 3000);
+  }
+
+  function resetInterval() {
+    clearInterval(intervalId);
+    startInterval();
+  }
+
+  showImage(currentIndex);
+  startInterval();
+</script>
+
+
 
 </html>
