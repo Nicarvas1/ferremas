@@ -9,6 +9,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from usuarios.forms import CustomUserCreationForm
 from inventario.models import Producto  # importa el modelo desde inventario
 import requests
+from pedidos.models import Pedido
+
+
+
 
 
 def pagar_carrito(request):
@@ -212,4 +216,8 @@ def logout_view(request):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    pedidos_usuario = Pedido.objects.filter(usuario=request.user).order_by('-fecha')
+    return render(request, 'profile.html', {
+        'user': request.user,
+        'pedidos': pedidos_usuario
+    })

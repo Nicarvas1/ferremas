@@ -10,3 +10,4 @@ class Usuario(AbstractUser):
         ('contador', 'Contador'),
     ]
     rol = models.CharField(max_length=20, choices=ROL_CHOICES)
+    telefono = models.CharField(max_length=20, blank=True, null=True)  # Nuevo campo

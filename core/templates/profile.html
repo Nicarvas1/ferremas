@@ -10,33 +10,96 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}" />
   <script type="text/javascript" src="{% static 'js/boxOver.js' %}"></script>
 </head>
+<style>
+  .profile-orders table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0 0 0;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.profile-orders th, .profile-orders td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.profile-orders th {
+  background: #295fa6;
+  color: #fff;
+  font-weight: 600;
+}
+
+.profile-orders tr:nth-child(even) {
+  background: #f4f7fa;
+}
+
+.profile-orders tr:nth-child(odd) {
+  background: #e6ecf3;
+}
+
+.profile-orders tr:hover {
+  background: #c9e1fa;
+}
+
+</style>
 
 <body>
   <div id="main_container">
-        <!-- Header -->
-      {% include "partials/header.html" %}
-          <!-- partial of menu tab -->
-      {% include "partials/menu_tab.html" %}
+    <!-- Header -->
+    {% include "partials/header.html" %}
+    <!-- partial of menu tab -->
+    {% include "partials/menu_tab.html" %}
     <div id="main_content">
-      <div class="center_content">
+      <div class="center_content" style="width: 950px;">
         <div class="center_title_bar">Mi Perfil</div>
-        <div class="prod_box">
+        <div>
           <div class="profile-info">
-            <h2>Bienvenido, {{ user.username }}</h2>
             <div class="profile-details">
               <p><strong>Nombre de Usuario:</strong> {{ user.username }}</p>
+              <p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
               <p><strong>Correo Electrónico:</strong> {{ user.email }}</p>
               <p><strong>Fecha de Registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
             </div>
             <div class="profile-actions">
               <a href="{% url 'index' %}" class="prod_buy">Volver al Inicio</a>
-              <a href="{% url 'logout' %}" class="prod_buy" style="background-color: #e74c3c;"
-                onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a>
             </div>
           </div>
         </div>
-      </div>
+        <div class="profile-orders">
+        <div class="center_title_bar">Mis Pedidos</div>
+        <br><br>
+      {% if pedidos %}
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Total</th>
+        </tr>
+        {% for pedido in pedidos %}
+        <tr>
+          <td>{{ pedido.id }}</td>
+          <td>{{ pedido.fecha|date:"d/m/Y H:i" }}</td>
+          <td>{{ pedido.estado }}</td>
+          <td>${{ pedido.total }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p>No tienes pedidos aún.</p>
+      {% endif %}
     </div>
+      </div>
+      
+    </div>
+    
+
+
+
     <div class="footer">
       <div class="left_footer"> <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42" />
       </div>

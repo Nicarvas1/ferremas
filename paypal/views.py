@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect, render
 from pedidos.models import Pedido, ItemPedido
 from inventario.models import Producto  # Asegúrate de que la ruta sea correcta
-from django.contrib.auth.models import User  # O tu modelo de usuario
+from usuarios.models import Usuario  # O la ruta real donde está tu modelo custom
 from whatsapp.views import enviar_whatsapp_pedido
 
 # Tus credenciales de SANDBOX
@@ -94,9 +94,13 @@ def paypal_capture_order(request):
         metodo_pago='PAYPAL',
         datos_pago=data  # Si quieres guardar la respuesta entera, pon JSONField en el modelo
     )
-    # Supón que tienes el nombre y el teléfono del usuario:
-    nombre = usuario.first_name if usuario and usuario.first_name else 'Usuario'
-    numero = usuario.telefono if usuario and hasattr(usuario, "telefono") else "56955267084"  # Usa uno real si existe
+
+
+    nombre = getattr(usuario, 'first_name', None) or getattr(usuario, 'nombre', None) or usuario.username or 'Usuario'
+    numero = "56992204638"  # Usa uno real si existe
+    print("Nombre:", nombre)
+    print("Pedido ID:", pedido.id)
+    print("Numero:", numero)
 
     # Llama a la función
     status, respuesta = enviar_whatsapp_pedido(nombre, pedido.id, numero)

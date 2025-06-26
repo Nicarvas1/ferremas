@@ -14,8 +14,8 @@
     <div id="main_container">
         <!-- Header -->
         {% include "partials/header.html" %}
-              <!-- partial of menu tab -->
-      {% include "partials/menu_tab.html" %}
+        <!-- partial of menu tab -->
+        {% include "partials/menu_tab.html" %}
         <div class="left_content">
             <div class="title_box">Categorias</div>
             <ul class="left_menu">
@@ -45,7 +45,8 @@
         </div>
         <div class="center_content" style="justify-items: center;">
             <h2>{{ producto.nombre }}</h2>
-            <img src="{{ producto.foto }}" alt="{{ producto.nombre }}" style="max-width:300px;">
+            <img src="{% static 'images/productos/' %}{{ producto.foto }}" alt="{{ producto.nombre }}"
+                style="max-width:300px;">
             <p><b>Marca:</b> {{ producto.marca }}</p>
             <p><b>Modelo:</b> {{ producto.modelo }}</p>
             <p><b>Precio:</b> ${{ producto.precio|floatformat:0 }}</p>

@@ -52,11 +52,9 @@
     <div id="main_container">
         <!-- Header -->
         {% include "partials/header.html" %}
-            <div id="logo"> <a href="#"><img src="{% static 'images/logoFM.png' %}" alt="" border="0" width="182"
-                        height="85" /></a> </div>
-        </div>
+
         <!-- partial of menu tab -->
-      {% include "partials/menu_tab.html" %}
+        {% include "partials/menu_tab.html" %}
 
         <div class="center_content">
             <h2>Detalle del Carrito</h2>
@@ -93,7 +91,7 @@
                 <a href="{% url 'limpiar_carrito' %}" class="prod_buy"
                     onclick="return confirm('¿Seguro que quieres vaciar el carrito?')">Limpiar carrito</a>
                 <a href="{% url 'paypal:crear_orden_paypal' total_usd=total_usd %}" class="prod_buy"
-                    style="background: #2063d1; border-color: #1851ad;">Pagar</a>
+                    >Pagar</a>
             </div>
             {% else %}
             <div class="empty-cart-msg">El carrito está vacío.</div>
