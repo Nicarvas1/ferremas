@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ferremas - Pedidos del Vendedor</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/pedidos.css' %}" />
+</head>
+
+<body>
+<div id="main_container">
+  {% include "partials/header.html" %}
+  {% include "partials/menu_tab.html" %}
+
+  <div id="main_content">
+    <div class="center_content">
+
+      <div class="center_title_bar">Pedidos pendientes por aprobar</div>
+      <div class="prod_box">
+        {% if pedidos_pendientes %}
+        <table class="table-pedidos">
+          <tr><th>ID</th><th>Cliente</th><th>Fecha</th><th>Monto</th><th>Acciones</th></tr>
+          {% for pedido in pedidos_pendientes %}
+          <tr>
+            <td>{{ pedido.id }}</td>
+            <td>{{ pedido.usuario.username }}</td>
+            <td>{{ pedido.fecha|date:"Y-m-d H:i" }}</td>
+            <td>{{ pedido.total }}</td>
+            <td>
+              <a href="{% url 'aprobar_pedido' pedido.id %}" class="btn aprobar">Aprobar</a>
+              <a href="{% url 'rechazar_pedido' pedido.id %}" class="btn rechazar">Rechazar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+        <p>No hay pedidos pendientes.</p>
+        {% endif %}
+      </div>
+
+      <div class="center_title_bar">Pedidos listos para entrega</div>
+      <div class="prod_box">
+        {% if pedidos_preparados %}
+        <table class="table-pedidos">
+          <tr><th>ID</th><th>Cliente</th><th>Estado</th><th>Monto</th><th>Acciones</th></tr>
+          {% for pedido in pedidos_preparados %}
+          <tr>
+            <td>{{ pedido.id }}</td>
+            <td>{{ pedido.usuario.username }}</td>
+            <td>{{ pedido.estado }}</td>
+            <td>{{ pedido.total }}</td>
+            <td>
+              <a href="{% url 'marcar_entregado' pedido.id %}" class="btn aprobar">Marcar como entregado</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+        <p>No hay pedidos preparados.</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="left_footer"><img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42"/></div>
+    <div class="center_footer">
+      Ferremas. Todos los derechos reserva2<br />
+      <img src="{% static 'images/payment.gif' %}" alt="" />
+    </div>
+    <div class="right_footer">
+      <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> <a href="#">Contactanos</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -7,3 +7,4 @@ router.register(r'pedidos', PedidoViewSet)
 router.register(r'items', ItemPedidoViewSet)
 
 urlpatterns = router.urls
+

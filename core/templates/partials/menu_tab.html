@@ -1,22 +1,43 @@
 <div id="menu_tab">
     <ul class="menu">
-        <li><a href="{% url 'index' %}" class="nav"> Home </a></li>
+        <li><a href="{% url 'index' %}" class="nav">Home</a></li>
         <li class="divider"></li>
         <li><a href="{% url 'productos_ferreteria' %}" class="nav">Productos</a></li>
         <li class="divider"></li>
 
         {% if user.is_authenticated %}
-        <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
-        <li class="divider"></li>
-        <li><a href="{% url 'logout' %}" class="nav"
-                onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
-        <li class="divider"></li>
+
+            <li><a href="{% url 'profile' %}" class="nav">Mi Cuenta</a></li>
+            <li class="divider"></li>
+
+            {% if user.rol == 'vendedor' %}
+                <li><a href="{% url 'vista_pedidos_vendedor' %}" class="nav">Gestionar Pedidos</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'historial_vendedor' %}" class="nav">Historial</a></li>
+                <li class="divider"></li>
+            {% elif user.rol == 'bodeguero' %}
+                <li><a href="{% url 'vista_pedidos_bodeguero' %}" class="nav">Preparar Pedidos</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'historial_bodeguero' %}" class="nav">Historial</a></li>
+                <li class="divider"></li>
+            {% elif user.rol == 'contador' %}
+                <li><a href="{% url 'vista_pedidos_contador' %}" class="nav">Confirmar Pagos</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'historial_contador' %}" class="nav">Historial</a></li>
+                <li class="divider"></li>
+            {% endif %}
+
+            <li><a href="{% url 'logout' %}" class="nav"
+                   onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">Cerrar Sesión</a></li>
+            <li class="divider"></li>
+
         {% else %}
-        <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
-        <li class="divider"></li>
-        <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
-        <li class="divider"></li>
+            <li><a href="{% url 'login' %}" class="nav">Iniciar Sesión</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'register' %}" class="nav">Registrarse</a></li>
+            <li class="divider"></li>
         {% endif %}
+
         <li><a href="#" class="nav">Envios</a></li>
         <li class="divider"></li>
         <li><a href="#" class="nav">Contactanos</a></li>

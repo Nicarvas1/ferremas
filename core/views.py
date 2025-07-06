@@ -13,8 +13,6 @@ from pedidos.models import Pedido
 
 
 
-
-
 def pagar_carrito(request):
     # Recalcula el total del carrito en CLP
     carrito = request.session.get('carrito', {})
@@ -26,7 +24,7 @@ def pagar_carrito(request):
             total += prod.precio * cantidad
 
     # Obtén la tasa de conversión (puedes optimizar esto para no llamar dos veces)
-    api_key = 'tu_api_key'
+    api_key = '04d347025e7b23c5e4e00963'
     url = f'https://v6.exchangerate-api.com/v6/{api_key}/pair/CLP/USD'
     try:
         response = requests.get(url)
@@ -221,3 +219,106 @@ def profile(request):
         'user': request.user,
         'pedidos': pedidos_usuario
     })
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from pedidos.models import Pedido
+
+def es_vendedor(user):
+    return user.is_authenticated and user.rol == 'vendedor'
+
+@login_required
+@user_passes_test(es_vendedor)
+def vista_pedidos_vendedor(request):
+    pedidos_pendientes = Pedido.objects.filter(estado='Pendiente')
+    pedidos_preparados = Pedido.objects.filter(estado='Preparado')
+    return render(request, 'vendedor/pedidos.html', {
+        'pedidos_pendientes': pedidos_pendientes,
+        'pedidos_preparados': pedidos_preparados
+    })
+
+@login_required
+@user_passes_test(es_vendedor)
+def aprobar_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido.estado = 'Aprobado'
+    pedido.save()
+    return redirect('vista_pedidos_vendedor')
+
+@login_required
+@user_passes_test(es_vendedor)
+def rechazar_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido.estado = 'Rechazado'
+    pedido.save()
+    return redirect('vista_pedidos_vendedor')
+
+@login_required
+@user_passes_test(es_vendedor)
+def marcar_entregado(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido.estado = 'Entregado'
+    pedido.save()
+    return redirect('vista_pedidos_vendedor')
+
+@login_required
+@user_passes_test(es_vendedor)
+def historial_vendedor(request):
+    pedidos = Pedido.objects.filter(estado__in=['Preparado', 'Entregado', 'Pagado', 'Rechazado'])
+    return render(request, 'vendedor/historial.html', {'pedidos': pedidos})
+
+
+def es_bodeguero(user):
+    return user.is_authenticated and user.rol == 'bodeguero'
+
+@login_required
+@user_passes_test(es_bodeguero)
+def vista_pedidos_bodeguero(request):
+    pedidos = Pedido.objects.filter(estado__in=['Aprobado', 'En preparacion'])
+    return render(request, 'bodeguero/pedidos.html', {'pedidos': pedidos})
+
+@login_required
+@user_passes_test(es_bodeguero)
+def preparar_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido.estado = 'En preparacion'
+    pedido.save()
+    return redirect('vista_pedidos_bodeguero')
+
+@login_required
+@user_passes_test(es_bodeguero)
+def marcar_preparado(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido.estado = 'Preparado'
+    pedido.save()
+    return redirect('vista_pedidos_bodeguero')
+
+@login_required
+@user_passes_test(es_bodeguero)
+def historial_bodeguero(request):
+    pedidos = Pedido.objects.filter(estado__in=['Preparado', 'Entregado', 'Pagado'])
+    return render(request, 'bodeguero/historial.html', {'pedidos': pedidos})
+
+
+def es_contador(user):
+    return user.is_authenticated and user.rol == 'contador'
+
+@login_required
+@user_passes_test(es_contador)
+def vista_pedidos_contador(request):
+    pedidos = Pedido.objects.filter(metodo_pago='Transferencia', estado='Entregado')
+    return render(request, 'contador/pedidos.html', {'pedidos': pedidos})
+
+@login_required
+@user_passes_test(es_contador)
+def confirmar_pago(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    pedido.estado = 'Pagado'
+    pedido.save()
+    return redirect('vista_pedidos_contador')
+
+@login_required
+@user_passes_test(es_contador)
+def historial_contador(request):
+    pedidos = Pedido.objects.filter(estado='Pagado')
+    return render(request, 'contador/historial.html', {'pedidos': pedidos})

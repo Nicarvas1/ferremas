@@ -40,5 +40,32 @@ urlpatterns = [
     path('', include('core.urls')),  # Incluye las URLs de la aplicación 'core'
 ]
 
+from core import views as core_views
+
+urlpatterns += [
+    path('vendedor/', core_views.vista_pedidos_vendedor, name='vista_pedidos_vendedor'),
+    path('vendedor/aprobar/<int:pedido_id>/', core_views.aprobar_pedido, name='aprobar_pedido'),
+    path('vendedor/rechazar/<int:pedido_id>/', core_views.rechazar_pedido, name='rechazar_pedido'),
+    path('vendedor/entregado/<int:pedido_id>/', core_views.marcar_entregado, name='marcar_entregado'),
+    path('vendedor/historial/', core_views.historial_vendedor, name='historial_vendedor'),
+
+]
+
+
+urlpatterns += [
+    path('bodeguero/', core_views.vista_pedidos_bodeguero, name='vista_pedidos_bodeguero'),
+    path('bodeguero/preparar/<int:pedido_id>/', core_views.preparar_pedido, name='preparar_pedido'),
+    path('bodeguero/preparado/<int:pedido_id>/', core_views.marcar_preparado, name='marcar_preparado'),
+    path('bodeguero/historial/', core_views.historial_bodeguero, name='historial_bodeguero'),
+
+]
+
+urlpatterns += [
+    path('contador/', core_views.vista_pedidos_contador, name='vista_pedidos_contador'),
+    path('contador/confirmar/<int:pedido_id>/', core_views.confirmar_pago, name='confirmar_pago'),
+    path('contador/historial/', core_views.historial_contador, name='historial_contador'),
+
+]
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

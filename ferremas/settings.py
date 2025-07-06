@@ -144,3 +144,5 @@ REST_FRAMEWORK = {
     ],
 }
 AUTH_USER_MODEL = 'usuarios.Usuario'
+
+LOGIN_URL = '/login/'

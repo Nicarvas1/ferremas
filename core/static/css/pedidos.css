@@ -1,0 +1,49 @@
+    .table-pedidos {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 16px;
+    }
+
+    .table-pedidos th,
+    .table-pedidos td {
+        padding: 16px 30px;
+        text-align: left;
+        border: 1px solid #ccc;
+    }
+
+    .table-pedidos th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .table-pedidos td {
+        vertical-align: middle;
+    }
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  margin: 2px;
+}
+
+.aprobar {
+  background-color: #4CAF50;
+}
+
+.aprobar:hover {
+  background-color: #45a049;
+}
+
+.rechazar {
+  background-color: #e74c3c;
+}
+
+.rechazar:hover {
+  background-color: #c0392b;
+}
+

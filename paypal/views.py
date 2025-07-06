@@ -23,26 +23,32 @@ def get_paypal_access_token():
 
 @csrf_exempt
 def paypal_create_order(request, total_usd):
-    total_usd = float(total_usd)  # Convierte acá
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Usuario no autenticado"}, status=401)
 
+    total_usd = float(total_usd)
     access_token = get_paypal_access_token()
     if not access_token:
         return JsonResponse({"error": "No se pudo obtener el token de acceso de PayPal"}, status=400)
 
-    url = f"{BASE_URL}/v2/checkout/orders"
+    url = f"{BASE_URL}/v2/checkout/orders"  # <--- AGREGA ESTA LÍNEA AQUÍ
+
     order_data = {
         "intent": "CAPTURE",
         "purchase_units": [{
             "amount": {
                 "currency_code": "USD",
                 "value": f"{total_usd:.2f}"
-            }
+            },
+            "custom_id": str(request.user.id)
         }],
         "application_context": {
             "return_url": "http://localhost:8000/api/paypal/capture-order/",
             "cancel_url": "http://localhost:8000/api/paypal/cancel/"
         }
     }
+
+    print("JSON enviado a PayPal:", order_data)
 
     headers = {
         "Content-Type": "application/json",
@@ -51,10 +57,12 @@ def paypal_create_order(request, total_usd):
 
     resp = requests.post(url, json=order_data, headers=headers)
     data = resp.json()
+    print("Respuesta PayPal (crear orden):", data)
     approve_url = next((l["href"] for l in data["links"] if l["rel"] == "approve"), None)
     if approve_url:
         return redirect(approve_url)
     return JsonResponse({"error": "No se pudo generar la orden PayPal", "response": data}, status=400)
+
 @csrf_exempt
 def paypal_capture_order(request):
     order_id = request.GET.get("token")
@@ -68,6 +76,22 @@ def paypal_capture_order(request):
     }
     resp = requests.post(url, headers=headers)
     data = resp.json()
+    print("Respuesta PayPal (capture):", data)
+
+    # Nueva ruta para custom_id:
+    custom_id = None
+    try:
+        custom_id = data['purchase_units'][0]['payments']['captures'][0]['custom_id']
+    except Exception as e:
+        print("No se encontró custom_id en la respuesta:", e)
+
+    if custom_id:
+        try:
+            usuario = Usuario.objects.get(id=custom_id)
+        except Usuario.DoesNotExist:
+            return JsonResponse({"error": "Usuario no encontrado"}, status=401)
+    else:
+        return JsonResponse({"error": "No se pudo recuperar el usuario"}, status=401)
 
     # 1. Recuperar datos del carrito de la sesión
     carrito = request.session.get('carrito', {})
@@ -82,22 +106,22 @@ def paypal_capture_order(request):
             total += subtotal
 
     # 2. Crear el pedido
-    if request.user.is_authenticated:
-        usuario = request.user
-    else:
-        usuario = None  # O maneja como usuario invitado
+    # if request.user.is_authenticated:
+    #     usuario = request.user
+    # else:
+    #     usuario = None  # O maneja como usuario invitado
 
     pedido = Pedido.objects.create(
         usuario=usuario,
         total=total,
-        estado='PAGADO',  # O el estado que manejes
+        estado='Pendiente',  # O el estado que manejes
         metodo_pago='PAYPAL',
         datos_pago=data  # Si quieres guardar la respuesta entera, pon JSONField en el modelo
     )
 
 
     nombre = getattr(usuario, 'first_name', None) or getattr(usuario, 'nombre', None) or usuario.username or 'Usuario'
-    numero = "56992204638"  # Usa uno real si existe
+    numero = "56955267084"  # Usa uno real si existe
     print("Nombre:", nombre)
     print("Pedido ID:", pedido.id)
     print("Numero:", numero)
