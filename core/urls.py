@@ -1,7 +1,7 @@
 from django.urls import path, include
 from django.contrib import admin
 from . import views
-from .views import webpay_init_transaction, webpay_return
+from .views import crear_producto, eliminar_producto, webpay_init_transaction, webpay_return
 from .views import productos_ferreteria
 
 
@@ -24,6 +24,13 @@ urlpatterns = [
     path('carrito/', views.detalle_carrito, name='detalle_carrito'),
     path('carrito/limpiar/', views.limpiar_carrito, name='limpiar_carrito'),
     path('carrito/pagar/', views.pagar_carrito, name='pagar_carrito'),
+    path('carrito/aumentar/<int:producto_id>/', views.aumentar_producto_carrito, name='aumentar_producto_carrito'),
+    path('carrito/disminuir/<int:producto_id>/', views.disminuir_producto_carrito, name='disminuir_producto_carrito'),
+    path('carrito/eliminar/<int:producto_id>/', views.eliminar_producto_carrito, name='eliminar_producto_carrito'),
+    path('actualizar-stock-sucursal/<int:producto_id>/', views.actualizar_stock_sucursal, name='actualizar_stock_sucursal'),
+    path('productos/nuevo/', crear_producto, name='crear_producto'),
+    path('productos/eliminar/<int:producto_id>/', eliminar_producto, name='eliminar_producto'),
+
   
 
 

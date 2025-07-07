@@ -104,8 +104,8 @@
 
 <body>
   <div id="main_container">
-        <!-- Header -->
-        {% include "partials/header.html" %}
+    <!-- Header -->
+    {% include "partials/header.html" %}
     <div id="main_content">
       {% if messages %}
       {% for message in messages %}
@@ -199,10 +199,23 @@
               {% for pid, cantidad in carrito.items %}
               {% with prod=productos_dict|get_item:pid %}
               {% if prod %}
-              <li><b>{{ prod.nombre }}</b> (x{{ cantidad }}) - ${{ prod.precio }} c/u</li>
+              <li style="margin-bottom: 8px;">
+                <b>{{ prod.nombre }}</b><br>
+                ${{ prod.precio|floatformat:0 }} c/u<br>
+                <a href="{% url 'disminuir_producto_carrito' prod.id %}?next={% url 'productos_ferreteria' %}"
+                  style="text-decoration: none;">➖</a>
+                {{ cantidad }}
+                <a href="{% url 'aumentar_producto_carrito' prod.id %}?next={% url 'productos_ferreteria' %}"
+                  style="text-decoration: none;">➕</a>
+                <a href="{% url 'eliminar_producto_carrito' prod.id %}?next={% url 'productos_ferreteria' %}"
+                  onclick="return confirm('¿Eliminar este producto del carrito?')" style="margin-left: 5px;">🗑️</a>
+                <br>
+
+              </li>
               {% endif %}
               {% endwith %}
               {% endfor %}
+
             </ul>
             <span class="border_cart"></span>
             <b>{{ total_productos }} productos</b><br />

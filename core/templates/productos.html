@@ -13,9 +13,9 @@
 
 <body>
     <div id="main_container">
-                <!-- Header -->
+        <!-- Header -->
         {% include "partials/header.html" %}
-              <!-- partial of menu tab -->
+        <!-- partial of menu tab -->
         {% include "partials/menu_tab.html" %}
         <div class="left_content">
             <div class="title_box">Categorias</div>
@@ -47,11 +47,12 @@
 
             <div class="center_title_bar">Productos</div>
             {% for prod in productos %}
-            <div class="prod_box">
+            <div class="prod_box" style="margin-top: 10px;">
                 <div class="center_prod_box">
                     <div class="product_title"><a href="#">{{ prod.nombre }}</a></div>
                     <div class="product_img">
-                        <a href="#"><img src="{% static 'images/productos/' %}{{ prod.foto }}" alt="{{ prod.nombre }}" border="0" /></a>
+                        <a href="#"><img src="{% static 'images/productos/' %}{{ prod.foto }}" alt="{{ prod.nombre }}"
+                                border="0" /></a>
                     </div>
                     <div class="prod_price">
                         <span class="reduce">${{ prod.precio|add:"2000" }}</span>
@@ -59,20 +60,115 @@
                     </div>
                 </div>
                 <div class="prod_details_tab">
+                    {% if prod.stock_total > 0 %}
                     <a href="{% url 'agregar_al_carrito' prod.id %}" class="prod_buy">Comprar</a>
+                    {% else %}
+                    <span class="prod_buy" style="background-color: #ccc; cursor: not-allowed;">Sin stock</span>
+                    {% endif %}
                     <a href="{% url 'detalle_producto' prod.id %}" class="prod_details">Detalles</a>
+                    {% if user.is_authenticated and user.rol == 'bodeguero' %}
+                    <!-- Botón que abre el modal -->
+                    <a href="javascript:void(0);" onclick="mostrarModal('{{ prod.id }}')" class="prod_details"
+                        style="margin-top: 5px; display: inline-block; width: 100%; background-size: 60% 100%; margin-bottom: 5px;">Actualizar
+                        stock</a>
+
+                    <!-- Modal oculto -->
+
+
+                    {% endif %}
+                    {% if user.is_authenticated and user.rol == 'admin' %}
+                    <form action="{% url 'eliminar_producto' prod.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="prod_details"
+                            onclick="return confirm('¿Estás seguro de eliminar este producto?')">🗑️ Eliminar</button>
+                    </form>
+                    {% endif %}
+
+
+
+                    <div id="modal-{{ prod.id }}" class="stock-modal"
+                        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000088; z-index:999;">
+                        <div
+                            style="background:#fff; margin: 10% auto; padding: 20px; width: 400px; border-radius: 8px; position:relative;">
+                            <h3>Stock - {{ prod.nombre }}</h3>
+                            <form action="{% url 'actualizar_stock_sucursal' prod.id %}" method="post">
+                                {% csrf_token %}
+
+                                <!-- Campo para actualizar stock online -->
+                                <label><b>Stock Online:</b></label>
+                                <input type="number" name="stock_online" value="{{ prod.stock }}" min="0"
+                                    style="width:60px;"><br><br>
+
+                                <!-- Campos para sucursales -->
+                                {% for sucursal in sucursales %}
+                                <label>{{ sucursal.nombre }}:</label>
+                                <input type="number" name="stock_sucursal_{{ sucursal.id }}"
+                                    value="{% for s in prod.stocks_sucursal %}{% if s.sucursal.id == sucursal.id %}{{ s.cantidad }}{% endif %}{% endfor %}"
+                                    min="0" style="width:60px;"><br>
+                                {% endfor %}
+
+                                <div style="margin-top: 10px;">
+                                    <button type="submit" class="prod_buy">Guardar</button>
+                                    <button type="button" onclick="cerrarModal('{{ prod.id }}')"
+                                        class="prod_details">Cerrar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+
                 </div>
+
             </div>
             {% empty %}
+            {% if request.GET.q %}
+            <p>No se encontraron resultados para "{{ request.GET.q }}"</p>
+            {% else %}
             <p>No hay productos registrados.</p>
-            {% endfor %}
+            {% endif %} {% endfor %}
+
+
 
         </div>
+                    {% if user.is_authenticated and user.rol == 'admin' %}
+            <button onclick="mostrarModalCrear()" class="prod_buy" style="margin-bottom: 10px; margin-top: 10px;">
+                ➕ Añadir producto
+            </button>
+            {% endif %}
+
+            <div id="modal-crear" class="stock-modal"
+                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000088; z-index:999;">
+                <div
+                    style="background:#fff; margin: 5% auto; padding: 20px; width: 400px; border-radius: 8px; position:relative;">
+                    <h3>Nuevo producto</h3>
+                    <form action="{% url 'crear_producto' %}" method="post">
+                        {% csrf_token %}
+                        <label>Código:</label><input type="text" name="codigo" class="newsletter_input"><br>
+                        <label>Nombre:</label><input type="text" name="nombre" class="newsletter_input"><br>
+                        <label>Marca:</label><input type="text" name="marca" class="newsletter_input"><br>
+                        <label>Modelo:</label><input type="text" name="modelo" class="newsletter_input"><br>
+                        <label>Categoría:</label><input type="text" name="categoria" class="newsletter_input"><br>
+                        <label>Foto (nombre.jpg):</label><input type="text" name="foto" class="newsletter_input"><br>
+                        <label>Precio:</label><input type="number" step="0.01" name="precio"
+                            class="newsletter_input"><br>
+                        <label>Stock online:</label><input type="number" name="stock" class="newsletter_input"><br>
+                        <div style="margin-top:10px;">
+                            <button type="submit" class="prod_buy">Guardar</button>
+                            <button type="button" onclick="cerrarModalCrear()" class="prod_details">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         <div class="right_content">
             <div class="title_box">Buscar</div>
             <div class="border_box">
-                <input type="text" name="newsletter" class="newsletter_input" value="keyword" />
-                <a href="#" class="join">Buscar</a>
+                <form method="get" action="{% url 'productos_ferreteria' %}">
+                    <input type="text" name="q" class="newsletter_input" placeholder="Buscar producto..."
+                        value="{{ request.GET.q }}">
+                    <button type="submit" class="join">Buscar</button>
+                </form>
+
             </div>
             <div class="shopping_cart">
                 <div class="title_box">Carrito de compras</div>
@@ -82,10 +178,24 @@
                         {% for pid, cantidad in carrito.items %}
                         {% with prod=productos_dict|get_item:pid %}
                         {% if prod %}
-                        <li><b>{{ prod.nombre }}</b> (x{{ cantidad }}) - ${{ prod.precio|floatformat:0 }} c/u</li>
+                        <li style="margin-bottom: 8px;">
+                            <b>{{ prod.nombre }}</b><br>
+                            ${{ prod.precio|floatformat:0 }} c/u<br>
+                            <a href="{% url 'disminuir_producto_carrito' prod.id %}?next={% url 'productos_ferreteria' %}"
+                                style="text-decoration: none;">➖</a>
+                            {{ cantidad }}
+                            <a href="{% url 'aumentar_producto_carrito' prod.id %}?next={% url 'productos_ferreteria' %}"
+                                style="text-decoration: none;">➕</a>
+                            <a href="{% url 'eliminar_producto_carrito' prod.id %}?next={% url 'productos_ferreteria' %}"
+                                onclick="return confirm('¿Eliminar este producto del carrito?')"
+                                style="margin-left: 5px;">🗑️</a>
+                            <br>
+
+                        </li>
                         {% endif %}
                         {% endwith %}
                         {% endfor %}
+
                     </ul>
                     <span class="border_cart"></span>
                     <b>{{ total_productos }} productos</b><br />
@@ -120,5 +230,24 @@
     </div>
     </div>
 </body>
+<script>
+    function mostrarModal(id) {
+        document.getElementById('modal-' + id).style.display = 'block';
+    }
+    function cerrarModal(id) {
+        document.getElementById('modal-' + id).style.display = 'none';
+    }
+</script>
+<script>
+    function mostrarModalCrear() {
+        document.getElementById('modal-crear').style.display = 'block';
+    }
+
+    function cerrarModalCrear() {
+        document.getElementById('modal-crear').style.display = 'none';
+    }
+</script>
+
+
 
 </html>

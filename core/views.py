@@ -118,6 +118,14 @@ def detalle_producto(request, producto_id):
 
 def productos_ferreteria(request):
     productos = Producto.objects.all()
+    for prod in productos:
+        stock_sucursales = StockSucursal.objects.filter(producto=prod)
+        prod.stocks_sucursal = stock_sucursales  # 👈 esta línea es clave
+        prod.stock_total = prod.stock + sum(s.cantidad for s in stock_sucursales)
+
+        
+    sucursales = Sucursal.objects.all()
+
     categorias = [
         "Herramientas Manuales",
         "Herramientas Eléctricas",
@@ -131,6 +139,10 @@ def productos_ferreteria(request):
     categoria_activa = request.GET.get('categoria')
     if categoria_activa:
         productos = productos.filter(categoria=categoria_activa)
+    # 👇 Nuevo: filtrar por búsqueda
+    query = request.GET.get('q')
+    if query:
+        productos = productos.filter(nombre__icontains=query)
 
     carrito = request.session.get("carrito", {})
     productos_dict = {str(p.id): p for p in Producto.objects.all()}
@@ -149,7 +161,10 @@ def productos_ferreteria(request):
         "productos_dict": productos_dict,
         "total_carrito": total,
         "total_productos": total_productos,
+        "carrito": carrito,
+        "sucursales": sucursales,
     })
+
 
 
 
@@ -312,6 +327,38 @@ def historial_bodeguero(request):
     return render(request, 'bodeguero/historial.html', {'pedidos': pedidos})
 
 
+from inventario.models import StockSucursal, Sucursal
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required
+@user_passes_test(es_bodeguero)
+def actualizar_stock_sucursal(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    for sucursal in Sucursal.objects.all():
+        stock_online = request.POST.get("stock_online")
+        if stock_online is not None:
+            try:
+                producto.stock = int(stock_online)
+                producto.save()
+            except ValueError:
+                pass
+
+        campo = f"stock_sucursal_{sucursal.id}"
+        cantidad = request.POST.get(campo)
+        if cantidad is not None:
+            try:
+                cantidad = int(cantidad)
+                stock, _ = StockSucursal.objects.get_or_create(producto=producto, sucursal=sucursal)
+                stock.cantidad = cantidad
+                stock.save()
+            except ValueError:
+                continue
+    messages.success(request, f"Stock por sucursal actualizado para {producto.nombre}.")
+    return redirect('productos_ferreteria')
+
+
+
 def es_contador(user):
     return user.is_authenticated and user.rol == 'contador'
 
@@ -334,3 +381,63 @@ def confirmar_pago(request, pedido_id):
 def historial_contador(request):
     pedidos = Pedido.objects.filter(estado='Pagado')
     return render(request, 'contador/historial.html', {'pedidos': pedidos})
+
+
+# Aumentar cantidad
+def aumentar_producto_carrito(request, producto_id):
+    carrito = request.session.get('carrito', {})
+    carrito[str(producto_id)] = carrito.get(str(producto_id), 0) + 1
+    request.session['carrito'] = carrito
+    next_url = request.GET.get('next', 'detalle_carrito')
+    return redirect(next_url)
+
+def disminuir_producto_carrito(request, producto_id):
+    carrito = request.session.get('carrito', {})
+    if str(producto_id) in carrito:
+        if carrito[str(producto_id)] > 1:
+            carrito[str(producto_id)] -= 1
+        else:
+            del carrito[str(producto_id)]
+        request.session['carrito'] = carrito
+    next_url = request.GET.get('next', 'detalle_carrito')
+    return redirect(next_url)
+
+def eliminar_producto_carrito(request, producto_id):
+    carrito = request.session.get('carrito', {})
+    carrito.pop(str(producto_id), None)
+    request.session['carrito'] = carrito
+    next_url = request.GET.get('next', 'detalle_carrito')
+    return redirect(next_url)
+
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import redirect
+from inventario.models import Producto
+
+def es_admin(user):
+    return user.is_authenticated and user.rol == 'admin'
+
+@user_passes_test(es_admin)
+def crear_producto(request):
+    if request.method == 'POST':
+        Producto.objects.create(
+            codigo=request.POST['codigo'],
+            nombre=request.POST['nombre'],
+            marca=request.POST['marca'],
+            modelo=request.POST['modelo'],
+            categoria=request.POST['categoria'],
+            foto=request.POST['foto'],
+            precio=request.POST['precio'],
+            stock=request.POST['stock']
+        )
+    return redirect('productos_ferreteria')
+
+
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_POST
+
+@require_POST
+@user_passes_test(es_admin)
+def eliminar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    producto.delete()
+    return redirect('productos_ferreteria')

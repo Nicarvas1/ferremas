@@ -29,30 +29,30 @@
         }
 
         .carrito-layout {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    margin-top: 20px;
-}
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 20px;
+        }
 
-.carrito-columna {
-    flex: 1;
-    width: 500px;
-}
+        .carrito-columna {
+            flex: 1;
+            width: 500px;
+        }
 
-.opciones-entrega {
-    flex: 1;
-    max-width: 400px;
-    background: #fff;
-    border: 1px solid #e2e2e2;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    margin: 30px auto 10px auto;
+        .opciones-entrega {
+            flex: 1;
+            max-width: 400px;
+            background: #fff;
+            border: 1px solid #e2e2e2;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin: 30px auto 10px auto;
 
-}
+        }
 
 
 
@@ -72,7 +72,7 @@
             color: #228b22;
         }
 
- 
+
 
         .opciones-entrega label {
             font-size: 16px;
@@ -150,7 +150,13 @@
                         {% for item in items %}
                         <tr>
                             <td>{{ item.producto.nombre }}</td>
-                            <td>{{ item.cantidad }}</td>
+                            <td>
+                                <a href="{% url 'disminuir_producto_carrito' item.producto.id %}">➖</a>
+                                {{ item.cantidad }}
+                                <a href="{% url 'aumentar_producto_carrito' item.producto.id %}">➕</a>
+                                <a href="{% url 'eliminar_producto_carrito' item.producto.id %}"
+                                    onclick="return confirm('¿Eliminar este producto del carrito?')">🗑️</a>
+                            </td>
                             <td>${{ item.producto.precio|floatformat:0 }}</td>
                             <td>${{ item.subtotal|floatformat:0 }}</td>
                         </tr>
