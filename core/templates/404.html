@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Error 404 - Página no encontrada</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+  <div id="main_container">
+    {% include "partials/header.html" %}
+
+    <div class="center_content">
+      <h2 style="text-align:center; margin-top: 50px; color: #d9534f;">¡Página no encontrada (404)!</h2>
+      <p style="text-align:center;">La página que buscas no existe o ha sido eliminada.</p>
+      <div style="text-align:center; margin-top: 20px;">
+        <a href="{% url 'index' %}" class="prod_buy">Volver al inicio</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="left_footer">
+        <img src="{% static 'images/footer_logo2.png' %}" alt="" width="89" height="42" />
+      </div>
+      <div class="center_footer">
+        Ferremas. Todos los derechos reserva2<br />
+        <a href="http://csscreme.com">
+          <img src="{% static 'images/csscreme.jpg' %}" alt="csscreme" title="csscreme" border="0" />
+        </a><br />
+        <img src="{% static 'images/payment.gif' %}" alt="" />
+      </div>
+      <div class="right_footer">
+        <a href="#">home</a> <a href="#">Sobre nosotros</a> <a href="#">sitemap</a> 
+        <a href="#">rss</a> <a href="#">Contactanos</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

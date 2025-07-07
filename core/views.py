@@ -441,3 +441,11 @@ def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     producto.delete()
     return redirect('productos_ferreteria')
+
+from django.shortcuts import render, redirect
+
+def error_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
+def error_500_view(request):
+    return render(request, '500.html', status=500)

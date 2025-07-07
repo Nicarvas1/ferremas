@@ -24,9 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9a2)@=8n%+fn7zd^(mbvnlr4skl54fdo+a3m365x_912i_imok'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+ALLOWED_HOSTS = ['*']  # O ajusta según corresponda
 
-ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -146,3 +147,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
 LOGIN_URL = '/login/'
+# settings.py
+HANDLER404 = 'core.views.custom_404_view'
+HANDLER500 = 'core.views.custom_500_view'
+
