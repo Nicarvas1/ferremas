@@ -50,7 +50,13 @@
             <p><b>Marca:</b> {{ producto.marca }}</p>
             <p><b>Modelo:</b> {{ producto.modelo }}</p>
             <p><b>Precio:</b> ${{ producto.precio|floatformat:0 }}</p>
-            <p><b>Stock:</b> {{ producto.stock }}</p>
+            <p><b>Stock online:</b> {{ producto.stock }}</p>
+                {% for stock in stock_por_sucursal %}
+                <p><b>{{ stock.sucursal.nombre }}: </b>{{ stock.cantidad }}</p>
+                {% empty %}
+                <p><b>Este producto no tiene stock registrado en sucursales.
+                    </b></p>
+                {% endfor %}
             <p><b>Categoría:</b> {{ producto.categoria }}</p>
             <a href="{% url 'productos_ferreteria' %}" class="prod_details">Volver</a>
         </div>

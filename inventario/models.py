@@ -12,3 +12,22 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class Sucursal(models.Model):
+    nombre = models.CharField(max_length=100)
+    direccion = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.nombre
+
+
+class StockSucursal(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='stocks')
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('producto', 'sucursal')
+
+    def __str__(self):
+        return f"{self.producto.nombre} - {self.sucursal.nombre}: {self.cantidad}"

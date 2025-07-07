@@ -33,6 +33,8 @@
         </tr>
         <tr><td><b>Estado:</b></td><td>{{ pago.status }}</td></tr>
         <tr><td><b>Email comprador:</b></td><td>{{ pago.payer.email_address }}</td></tr>
+        <p><b>Tipo de entrega:</b> {{ pedido.get_tipo_entrega_display }}</p>
+
     </table>
     <a href="{% url 'productos_ferreteria' %}" class="prod_details">Volver</a>
 </div>

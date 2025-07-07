@@ -10,6 +10,7 @@ from usuarios.forms import CustomUserCreationForm
 from inventario.models import Producto  # importa el modelo desde inventario
 import requests
 from pedidos.models import Pedido
+from inventario.models import StockSucursal, Sucursal
 
 
 
@@ -42,6 +43,7 @@ def pagar_carrito(request):
 
 def detalle_carrito(request):
     print("CARGANDO VISTA DETALLE CARRITO")  # <-- Agrega esto
+    sucursales = Sucursal.objects.all()
 
     carrito = request.session.get('carrito', {})
     productos_dict = {str(p.id): p for p in Producto.objects.all()}
@@ -75,8 +77,10 @@ def detalle_carrito(request):
         "items": items,
         "total": total,
         "total_usd": total_usd,
-        "clp_usd": clp_usd
+        "clp_usd": clp_usd,
+        "sucursales": sucursales  # 👈 Agregado aquí
     })
+
 
 
 def limpiar_carrito(request):
@@ -94,14 +98,22 @@ def agregar_al_carrito(request, producto_id):
 def detalle_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
-    # Listado único de categorías (como en la vista de productos)
+    # Listado único de categorías
     categorias = Producto.objects.values_list('categoria', flat=True).distinct().order_by('categoria')
     categoria_activa = request.GET.get('categoria', '')
+
+    # Agrega el stock por sucursal
+    stock_por_sucursal = StockSucursal.objects.filter(producto=producto)
+
+    # (Opcional) Calcular total físico sumando todas las sucursales
+    stock_total_fisico = sum(s.cantidad for s in stock_por_sucursal)
 
     return render(request, "detalle_producto.html", {
         "producto": producto,
         "categorias": categorias,
-        "categoria_activa": categoria_activa
+        "categoria_activa": categoria_activa,
+        "stock_por_sucursal": stock_por_sucursal,
+        "stock_total_fisico": stock_total_fisico
     })
 
 def productos_ferreteria(request):

@@ -28,6 +28,32 @@
             background: #f5f5f5;
         }
 
+        .carrito-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.carrito-columna {
+    flex: 1;
+    width: 500px;
+}
+
+.opciones-entrega {
+    flex: 1;
+    max-width: 400px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    margin: 30px auto 10px auto;
+
+}
+
 
 
 
@@ -45,8 +71,61 @@
             margin-top: 30px;
             color: #228b22;
         }
+
+ 
+
+        .opciones-entrega label {
+            font-size: 16px;
+            margin: 0 25px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .opciones-entrega select,
+        .opciones-entrega input[type="text"] {
+            margin-top: 10px;
+            padding: 8px;
+            width: 60%;
+            max-width: 400px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .opciones-entrega button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .opciones-entrega button:hover {
+            background-color: #4cae4c;
+        }
+
+        .carrito-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
     </style>
 </head>
+
+<script>
+    function mostrarOpciones() {
+        const retiro = document.querySelector('input[name="entrega"][value="retiro"]').checked;
+        const despacho = document.querySelector('input[name="entrega"][value="despacho"]').checked;
+
+        document.getElementById('opcion-retiro').style.display = retiro ? 'block' : 'none';
+        document.getElementById('opcion-despacho').style.display = despacho ? 'block' : 'none';
+    }
+</script>
+
 
 <body>
     <div id="main_container">
@@ -56,43 +135,88 @@
         <!-- partial of menu tab -->
         {% include "partials/menu_tab.html" %}
 
-        <div class="center_content">
+        <div class="center_content" style="width: 96% !important;">
             <h2>Detalle del Carrito</h2>
             {% if items %}
-            <table class="carrito-table">
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio c/u</th>
-                    <th>Subtotal</th>
-                </tr>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.producto.nombre }}</td>
-                    <td>{{ item.cantidad }}</td>
-                    <td>${{ item.producto.precio|floatformat:0 }}</td>
-                    <td>${{ item.subtotal|floatformat:0 }}</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="3" style="text-align: right;"><b>Total en CLP:</b></td>
-                    <td><b>${{ total|floatformat:0 }}</b></td>
-                </tr>
-                <tr>
-                    <td colspan="3" style="text-align: right;"><b>Total en USD:</b></td>
-                    <td><b>
-                            {% if total_usd %}${{ total_usd }}{% else %}No disponible{% endif %}
-                        </b></td>
-                </tr>
+            <div class="carrito-layout">
+                <div class="carrito-columna">
+                    <table class="carrito-table">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio c/u</th>
+                            <th>Subtotal</th>
+                        </tr>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.producto.nombre }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>${{ item.producto.precio|floatformat:0 }}</td>
+                            <td>${{ item.subtotal|floatformat:0 }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><b>Total en CLP:</b></td>
+                            <td><b>${{ total|floatformat:0 }}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><b>Total en USD:</b></td>
+                            <td><b>
+                                    {% if total_usd %}${{ total_usd }}{% else %}No disponible{% endif %}
+                                </b></td>
+                        </tr>
 
-            </table>
-            <div class="carrito-buttons">
-                <a href="{% url 'productos_ferreteria' %}" class="prod_details">Volver</a>
-                <a href="{% url 'limpiar_carrito' %}" class="prod_buy"
-                    onclick="return confirm('¿Seguro que quieres vaciar el carrito?')">Limpiar carrito</a>
-                <a href="{% url 'paypal:crear_orden_paypal' total_usd=total_usd %}" class="prod_buy"
-                    >Pagar</a>
+                    </table>
+
+                    <div class="carrito-buttons">
+                        <a href="{% url 'productos_ferreteria' %}" class="prod_details">Volver</a>
+                        <a href="{% url 'limpiar_carrito' %}" class="prod_buy"
+                            onclick="return confirm('¿Seguro que quieres vaciar el carrito?')">Limpiar carrito</a>
+                    </div>
+
+                </div>
+                <div class="opciones-entrega">
+                    <form action="{% url 'paypal:crear_orden_paypal' total_usd=total_usd %}" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <label>
+                                <input type="radio" name="entrega" value="retiro" onclick="mostrarOpciones()" required>
+                                Retiro en tienda
+                            </label>
+                            <label>
+                                <input type="radio" name="entrega" value="despacho" onclick="mostrarOpciones()">
+                                Despacho a domicilio
+                            </label>
+                        </div>
+
+                        <div id="opcion-retiro" style="display: none;">
+                            <label for="sucursal">Sucursal:</label><br>
+                            <select name="sucursal">
+                                <option value="" disabled selected>No seleccionado</option>
+                                {% for sucursal in sucursales %}
+                                <option value="{{ sucursal.nombre }}">{{ sucursal.nombre }} - {{ sucursal.direccion }}
+                                </option>
+                                {% empty %}
+                                <option disabled>No hay sucursales disponibles</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div id="opcion-despacho" style="display: none;">
+                            <label for="direccion">Dirección:</label><br>
+                            <input type="text" name="direccion" placeholder="Ej: Av. Siempre Viva 1234">
+                        </div>
+
+                        <div>
+                            <button type="submit" class="prod_buy">Pagar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
+
+
+
             {% else %}
             <div class="empty-cart-msg">El carrito está vacío.</div>
             <div class="carrito-buttons">

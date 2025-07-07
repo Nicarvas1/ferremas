@@ -25,6 +25,20 @@ def get_paypal_access_token():
 def paypal_create_order(request, total_usd):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Usuario no autenticado"}, status=401)
+    
+        # 👇 Capturamos el tipo de entrega desde el POST
+    if request.method == 'POST':
+        tipo_entrega = request.POST.get('entrega')
+        sucursal = request.POST.get('sucursal')
+        direccion = request.POST.get('direccion')
+        total = request.POST.get('total_clp')
+
+        request.session['tipo_entrega'] = tipo_entrega
+        request.session['sucursal'] = sucursal
+        request.session['direccion'] = direccion
+        request.session['total_clp'] = total  # total_clp = valor en pesos
+
+
 
     total_usd = float(total_usd)
     access_token = get_paypal_access_token()
@@ -65,6 +79,10 @@ def paypal_create_order(request, total_usd):
 
 @csrf_exempt
 def paypal_capture_order(request):
+    tipo_entrega = request.session.get('tipo_entrega', 'retiro')
+    sucursal = request.session.get('sucursal', '')
+    direccion = request.session.get('direccion', '')
+    total = request.session.get('total_clp', 0)
     order_id = request.GET.get("token")
     if not order_id:
         return HttpResponse("Falta el token de la orden.", status=400)
@@ -97,13 +115,23 @@ def paypal_capture_order(request):
     carrito = request.session.get('carrito', {})
     productos_dict = {str(p.id): p for p in Producto.objects.all()}
     items = []
-    total = 0
+    total = 0  # Total en CLP
     for pid, cantidad in carrito.items():
         prod = productos_dict.get(str(pid))
         if prod:
             subtotal = prod.precio * cantidad
             items.append({'producto': prod, 'cantidad': cantidad, 'subtotal': subtotal})
             total += subtotal
+            print("==== DEBUG PEDIDO ====")
+
+    print("Carrito:", carrito)
+    print("Total CLP calculado:", total)
+    print("Items:", items)
+    print("Usuario:", usuario)
+    print("Tipo entrega:", tipo_entrega)
+    print("Sucursal:", sucursal)
+    print("Dirección:", direccion)
+
 
     # 2. Crear el pedido
     # if request.user.is_authenticated:
@@ -114,10 +142,14 @@ def paypal_capture_order(request):
     pedido = Pedido.objects.create(
         usuario=usuario,
         total=total,
-        estado='Pendiente',  # O el estado que manejes
+        estado='Pendiente',
         metodo_pago='PAYPAL',
-        datos_pago=data  # Si quieres guardar la respuesta entera, pon JSONField en el modelo
+        datos_pago=data,
+        tipo_entrega=tipo_entrega,
+        direccion_entrega=direccion,
+        sucursal_retiro=sucursal
     )
+
 
 
     nombre = getattr(usuario, 'first_name', None) or getattr(usuario, 'nombre', None) or usuario.username or 'Usuario'
@@ -133,15 +165,38 @@ def paypal_capture_order(request):
 
     # 3. Crear los ítems
     for item in items:
+        producto = item['producto']
+        cantidad = item['cantidad']
+
+        # Crear el item
         ItemPedido.objects.create(
             pedido=pedido,
-            producto=item['producto'],
-            cantidad=item['cantidad'],
+            producto=producto,
+            cantidad=cantidad,
         )
+
+        # 👇 Descontar stock según tipo de entrega
+        if tipo_entrega == 'despacho':
+            producto.stock = max(0, producto.stock - cantidad)
+            producto.save()
+        elif tipo_entrega == 'retiro' and sucursal:
+            from inventario.models import StockSucursal, Sucursal
+            try:
+                suc = Sucursal.objects.get(nombre=sucursal)
+                stock_obj = StockSucursal.objects.get(producto=producto, sucursal=suc)
+                stock_obj.cantidad = max(0, stock_obj.cantidad - cantidad)
+                stock_obj.save()
+            except (Sucursal.DoesNotExist, StockSucursal.DoesNotExist) as e:
+                print(f" Error al descontar stock en sucursal: {e}")
+
 
     # 4. Limpiar carrito
     request.session['carrito'] = {}
+    request.session.pop('tipo_entrega', None)
+    request.session.pop('sucursal', None)
+    request.session.pop('direccion', None)
 
     # 5. Mostrar comprobante
     return render(request, "boleta_paypal.html", {"pago": data, "pedido": pedido})
+
 
